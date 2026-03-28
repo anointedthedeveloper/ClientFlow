@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id         String     @id @default(cuid())
+  name       String
+  plan       String     @default("free")
+  createdAt  DateTime   @default(now())
+  users      User[]
+  customers  Customer[]
+  deals      Deal[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  password       String
+  name           String
+  role           Role         @default(SALES)
+  refreshToken   String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  deals          Deal[]       @relation("AssignedDeals")
+  activities     Activity[]
+  createdAt      DateTime     @default(now())
+}
+
+model Customer {
+  id             String       @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  company        String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  deals          Deal[]
+  createdAt      DateTime     @default(now())
+}
+
+model Deal {
+  id             String       @id @default(cuid())
+  title          String
+  value          Float        @default(0)
+  stage          DealStage    @default(LEAD)
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  assignedToId   String?
+  assignedTo     User?        @relation("AssignedDeals", fields: [assignedToId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  activities     Activity[]
+  createdAt      DateTime     @default(now())
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  type      ActivityType
+  content   String
+  dealId    String?
+  deal      Deal?        @relation(fields: [dealId], references: [id])
+  createdBy String
+  user      User         @relation(fields: [createdBy], references: [id])
+  createdAt DateTime     @default(now())
+}
+
+enum Role {
+  ADMIN
+  SALES
+  SUPPORT
+}
+
+enum DealStage {
+  LEAD
+  CONTACTED
+  PROPOSAL
+  CLOSED
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  EMAIL
+}
