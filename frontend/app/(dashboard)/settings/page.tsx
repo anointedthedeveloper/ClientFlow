@@ -1,7 +1,7 @@
 'use client';
 import { useAuthStore } from '@/store/auth.store';
 import { Card, Badge } from '@/components/ui';
-import { User, Building2, Github } from 'lucide-react';
+import { User, Building2, ExternalLink } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -44,7 +44,7 @@ export default function SettingsPage() {
 
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Github className="w-4 h-4 text-gray-500" />
+          <ExternalLink className="w-4 h-4 text-gray-500" />
           <h2 className="text-sm font-semibold text-gray-700">About</h2>
         </div>
         <p className="text-sm text-gray-600">
